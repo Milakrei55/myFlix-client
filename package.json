@@ -1,5 +1,5 @@
 {
-  "name": "33-exercise-demo-final",
+  "name": "myflixapp",
   "main": "src/index.jsx",
   "dependencies": {
     "react": "18.0.0",
