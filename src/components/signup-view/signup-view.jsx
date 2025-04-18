@@ -47,7 +47,7 @@ export const SignupView = () => {
         />
       </Form.Group>
 
-      <Form.Group contorlId="signupFormPassword">
+      <Form.Group controlId="signupFormPassword">
         <Form.Label>Password:</Form.Label>
         <Form.Control
           type="password"
