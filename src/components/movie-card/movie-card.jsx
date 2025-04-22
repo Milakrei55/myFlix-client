@@ -5,27 +5,20 @@ import { Link } from "react-router-dom";
 
 export const MovieCard = ({ movie, onAddFavorite, onRemoveFavorite }) => {
   return (
-    <Col className="mb-4" md={4}>
+    <Col className="mb-4" md={10}>
       <Card className="h-100">
-        <Card.Img variant="top" src={movie.image} />
+        <Card.Img variant="top" src={movie.ImagePath} />
         <Card.Body>
-          <Card.Title>{movie.title}</Card.Title>
-          <Card.Text>
-            <strong>Director:</strong> {movie.director}
-          </Card.Text>
-          <Card.Text>
-            <strong>Genre:</strong> {movie.genre}
-          </Card.Text>
-          <Card.Text>{movie.description}</Card.Text>
+          <Card.Title>{movie.Title}</Card.Title>
           <div className="d-flex justify-content-between mt-3">
             <Link to={`/movies/${encodeURIComponent(movie._id)}`}>
               <Button variant="outline-primary">Open</Button>
             </Link>
             <Button variant="primary" onClick={onAddFavorite}>
-              ♡ Favorite
+              Favorite
             </Button>
             <Button variant="danger" onClick={onRemoveFavorite}>
-              ✖ Remove
+              Remove
             </Button>
           </div>
         </Card.Body>
@@ -36,11 +29,11 @@ export const MovieCard = ({ movie, onAddFavorite, onRemoveFavorite }) => {
 
 MovieCard.propTypes = {
   movie: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    image: PropTypes.string.isRequired,
-    director: PropTypes.string,
-    description: PropTypes.string,
-    genre: PropTypes.string,
+    Title: PropTypes.string.isRequired,
+    ImagePath: PropTypes.string.isRequired,
+    Director: PropTypes.string,
+    Description: PropTypes.string,
+    Genre: PropTypes.string,
     _id: PropTypes.string,
   }).isRequired,
   onAddFavorite: PropTypes.func,

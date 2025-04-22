@@ -13,19 +13,19 @@ export const MovieView = ({ movies }) => {
       <Card>
         <Row className="g-0">
           <Col md={4}>
-            <Card.Img variant="top" src={movie.image} alt={movie.title} />
+            <Card.Img variant="top" src={movie.ImagePath} alt={movie.Title} />
           </Col>
           <Col md={8}>
             <Card.Body>
-              <Card.Title>{movie.title}</Card.Title>
+              <Card.Title>{movie.Title}</Card.Title>
               <Card.Text>
-                <strong>Description:</strong> {movie.description}
+                <strong>Description:</strong> {movie.Description}
               </Card.Text>
               <Card.Text>
-                <strong>Director:</strong> {movie.director}
+                <strong>Director:</strong> {movie.Director.Name}
               </Card.Text>
               <Card.Text>
-                <strong>Genre:</strong> {movie.genre}
+                <strong>Genre:</strong> {movie.Genre.Name}
               </Card.Text>
               <Link to="/">
                 <Button variant="secondary">← Back</Button>

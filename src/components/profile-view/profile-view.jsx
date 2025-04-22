@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import { Button, Form, Card, Container, Row, Col } from "react-bootstrap";
 import { MovieCard } from "../movie-card/movie-card";
+import "./profile-view.scss";
 
-export const ProfileView =({ movies, user, token, onLoggedOut }) => {
+export const ProfileView = ({ movies, user, token, onLoggedOut }) => {
   const [userData, setUserData] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [favoriteMovies, setFavoriteMovies] = useState([]);
+  const [Username, setUsername] = useState("");
+  const [Password, setPassword] = useState("");
+  const [Email, setEmail] = useState("");
+  const [Birthday, setBirthday] = useState("");
+  const [FavoriteMovies, setFavoriteMovies] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user && token) {
-      fetch(`https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}`,
+      fetch(
+        `https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}`,
         {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
@@ -26,167 +27,203 @@ export const ProfileView =({ movies, user, token, onLoggedOut }) => {
           setUserData(data);
           setUsername(data.Username);
           setEmail(data.Email);
-          setBirthday(data.Birthday);
+          setBirthday(data.Birthday?.split("T")[0]); // Format birthday
           setFavoriteMovies(data.FavoriteMovies || []);
         })
         .catch((error) => console.error("Error fetching user data", error));
     }
   }, [user, token]);
-    
-    const handleUpdate = (event) => {
-      event.preventDefault();
 
-      fetch(`https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            Username: username,
-            Password: password,
-            Email: email,
-            Birthday: birthday,
-          }),
+  const handleUpdate = (event) => {
+    event.preventDefault();
+
+    fetch(
+      `https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          Username,
+          Password,
+          Email,
+          Birthday,
+        }),
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          alert("Profile updated successfully!");
+        } else {
+          alert("Failed to update profile");
         }
-      )
-        .then((response) => {
-          if (response.ok) {
-            alert("Profile updated successfully!");
-          } else {
-            alert("Failed to update profile");
-          }
-        })
-        .catch((error) => console.error("Error updating profile", error));
-    };
+      })
+      .catch((error) => console.error("Error updating profile", error));
+  };
 
-    const handleDelete = () => {
-      fetch(`https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
+  const handleDelete = () => {
+    fetch(
+      `https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((response) => {
+        if (response.ok) {
+          onLoggedOut();
+          navigate("/");
+        } else {
+          alert("Failed to delete profile");
         }
-      )
-        .then((response) => {
-          if (response.ok) {
-            onLoggedOut();
-            navigate("/");
-          } else {
-            alert("failed to delete the profile");
-          }
-        })
-        .catch((error) => console.error("Error deleting profile:", error));
-    };
+      })
+      .catch((error) => console.error("Error deleting profile:", error));
+  };
 
-    const favoriteMoviesList = movies ? movies.filter((movie) => favoriteMovies.includes(movie._id)) : [];
+  const handleAddFavorite = (movieId) => {
+    fetch(
+      `https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setFavoriteMovies(data.FavoriteMovies);
+      })
+      .catch((error) => console.error("Error adding to favorites", error));
+  };
 
-    const handleAddFavorite = (movieId) => {
-      fetch(`https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          setFavoriteMovies(data.FavoriteMovies);
-        })
-        .catch((error) => console.error("Error adding to favorites", error));
-    };
+  const handleRemoveFavorite = (movieId) => {
+    fetch(
+      `https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setFavoriteMovies(data.FavoriteMovies);
+      })
+      .catch((error) => console.error("Error removing from favorites", error));
+  };
 
-    const handleRemoveFavorite = (movieId) => {
-      fetch(`https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}/movies/${movieId}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          setFavoriteMovies(data.FavoriteMovies);
-        })
-        .catch((error) =>
-          console.error("Error removing from favorites", error)
-        );
-    };
+  const FavoriteMoviesList = movies
+    ? movies.filter((movie) => FavoriteMovies.includes(movie._id))
+    : [];
 
-    if (!userData) return <div>Loading profile...</div>;
+  if (!userData) return <div>Loading profile...</div>;
 
-    return (
-      <div className="profile-view">
-        <p>Profile Details</p>
-        <p>Username: {userData.Username}</p>
-        <p>Email: {userData.Email}</p>
-        <p>Birthday: {userData.Birthday}</p>
+  return (
+    <Container className="profile-view mt-4">
+      <Row>
+        {/* Profile Info */}
+        <Col md={4}>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>👤 Your Profile</Card.Title>
+              <Card.Text>
+                <strong>Username:</strong> {userData.Username}
+              </Card.Text>
+              <Card.Text>
+                <strong>Email:</strong> {userData.Email}
+              </Card.Text>
+              <Card.Text>
+                <strong>Birthday:</strong> {Birthday}
+              </Card.Text>
+              <Button
+                variant="danger"
+                onClick={handleDelete}
+                className="mt-3 w-100"
+              >
+                Delete Profile
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
 
-      <Form onSubmit={handleUpdate}>
-        <Form.Group controlId="updateUsername">
-          <Form.Label>Username:</Form.Label>
-          <Form.Control
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            minLength="3"
-          />
-        </Form.Group>
+        {/* Update Form */}
+        <Col md={8}>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>📝 Update Profile Info</Card.Title>
+              <Form onSubmit={handleUpdate}>
+                <Form.Group className="mb-3" controlId="updateUsername">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={Username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </Form.Group>
 
-        <Form.Group controlId="updatePassword">
-          <Form.Label>Password:</Form.Label>
-          <Form.Control 
-           type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </Form.Group>
-      
-        <Form.Group controlId="updateEmail">
-          <Form.Label>Email:</Form.Label>
-            <Form.Control 
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
-            />
-         </Form.Group>
-      
-        <Form.Group controlId="updateBirthday">
-          <Form.Label>Birthday:</Form.Label>
-            <Form.Control 
-              type="date"
-              value={birthday}
-              onChange={(e) => setBirthday(e.target.value)}
-              required 
-         />
-        </Form.Group>
-      <Button type="submit">Update Profile</Button>
-      </Form>
+                <Form.Group className="mb-3" controlId="updatePassword">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={Password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
 
-      <Button variant="danger" onClick={handleDelete}>
-        Delete Profile
-      </Button>
+                <Form.Group className="mb-3" controlId="updateEmail">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={Email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
 
-      <h3>Favorite Movies</h3>
-      {favoriteMovies.length === 0 ? (
-        <p>No favorite movies yet.</p>
-      ) : (
-        <ul>
-        {favoriteMovies.map((movie) => (
-          <li key={movie._id}>
-            <MovieCard
-            movie={movie}
-            onAddFavorite={() => handleAddFavorite(movie._id)}
-            onRemoveFavorite={() => handleRemoveFavorite(movie._id)}
-            />
-          </li>
-        ))}
-        </ul>
-      )}
-      </div>
-    );
-    };
+                <Form.Group className="mb-3" controlId="updateBirthday">
+                  <Form.Label>Birthday</Form.Label>
+                  <Form.Control
+                    type="date"
+                    value={Birthday}
+                    onChange={(e) => setBirthday(e.target.value)}
+                  />
+                </Form.Group>
+
+                <Button type="submit" variant="primary" className="w-100">
+                  Save Changes
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Favorite Movies */}
+      <Row>
+        <Col>
+          <h4>❤️ Your Favorite Movies</h4>
+          {FavoriteMoviesList.length === 0 ? (
+            <p>You have not added any favorites yet.</p>
+          ) : (
+            <Row>
+              {FavoriteMoviesList.map((movie) => (
+                <Col key={movie._id} md={5} className="mb-4">
+                  <MovieCard
+                    movie={movie}
+                    onAddFavorite={() => handleAddFavorite(movie._id)}
+                    onRemoveFavorite={() => handleRemoveFavorite(movie._id)}
+                  />
+                </Col>
+              ))}
+            </Row>
+          )}
+        </Col>
+      </Row>
+    </Container>
+  );
+};
