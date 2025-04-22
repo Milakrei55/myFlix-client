@@ -1,34 +1,39 @@
+import { useParams, Link } from "react-router-dom";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import "./movie-view.scss";
 
-export const MovieView = ({ movie, onBackClick }) => {
+export const MovieView = ({ movies }) => {
+  const { movieId } = useParams();
+  const movie = movies.find((m) => m._id === movieId);
+
+  if (!movie) return <div>Movie not found</div>;
+
   return (
-    <div>
-      <div>
-        <img src={movie.image} />
-      </div>
-      <div>
-        <span>Title: </span>
-        <span>{movie.title}</span>
-      </div>
-      <div>
-        <span>Description: </span>
-        <span>{movie.description}</span>
-      </div>
-      <div>
-        <span>Director: </span>
-        <span>{movie.director}</span>
-      </div>
-      <div>
-        <span>Genre: </span>
-        <span>{movie.genre}</span>
-      </div>
-      <button
-        onClick={onBackClick}
-        className="back-button"
-        style={{ cursor: "pointer" }}
-      >
-        Back
-      </button>
-    </div>
+    <Container className="mt-4">
+      <Card>
+        <Row className="g-0">
+          <Col md={4}>
+            <Card.Img variant="top" src={movie.ImagePath} alt={movie.Title} />
+          </Col>
+          <Col md={8}>
+            <Card.Body>
+              <Card.Title>{movie.Title}</Card.Title>
+              <Card.Text>
+                <strong>Description:</strong> {movie.Description}
+              </Card.Text>
+              <Card.Text>
+                <strong>Director:</strong> {movie.Director.Name}
+              </Card.Text>
+              <Card.Text>
+                <strong>Genre:</strong> {movie.Genre.Name}
+              </Card.Text>
+              <Link to="/">
+                <Button variant="secondary">← Back</Button>
+              </Link>
+            </Card.Body>
+          </Col>
+        </Row>
+      </Card>
+    </Container>
   );
 };

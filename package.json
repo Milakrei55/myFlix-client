@@ -1,6 +1,7 @@
 {
   "name": "myflix-client",
   "version": "1.0.0",
+  "description": "A movie app that will allow you to search for different movies",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -8,20 +9,16 @@
     "type": "git",
     "url": "git+https://github.com/Milakrei55/myFlix-client.git"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Michaela",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Milakrei55/myFlix-client/issues"
-  },
-  "homepage": "https://github.com/Milakrei55/myFlix-client#readme",
-  "description": "",
   "dependencies": {
     "bootstrap": "^5.2.0",
     "prop-types": "^15.8.1",
     "react": "^19.0.0",
     "react-bootstrap": "^2.5.0",
     "react-dom": "^19.0.0",
+    "react-router": "^6.30.0",
+    "react-router-dom": "^6.30.0",
     "react-scripts": "4.0.0"
   },
   "devDependencies": {

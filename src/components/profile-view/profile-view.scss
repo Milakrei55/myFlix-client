@@ -1,0 +1,20 @@
+.profile-view {
+    h4 {
+        margin-top: 2rem;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 0.5rem;
+    }
+
+    .card {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+        font-weight: bold;
+        font-size: 1.25rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+}
