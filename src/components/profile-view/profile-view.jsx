@@ -4,7 +4,13 @@ import { Button, Form, Card, Container, Row, Col } from "react-bootstrap";
 import { MovieCard } from "../movie-card/movie-card";
 import "./profile-view.scss";
 
-export const ProfileView = ({ movies, user, token, onLoggedOut }) => {
+export const ProfileView = ({
+  movies,
+  user,
+  token,
+  onLoggedOut,
+  onUserUpdated,
+}) => {
   const [userData, setUserData] = useState(null);
   const [Username, setUsername] = useState("");
   const [Password, setPassword] = useState("");
@@ -22,12 +28,17 @@ export const ProfileView = ({ movies, user, token, onLoggedOut }) => {
           headers: { Authorization: `Bearer ${token}` },
         }
       )
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to fetch user data.");
+          }
+          return response.json();
+        })
         .then((data) => {
           setUserData(data);
           setUsername(data.Username);
           setEmail(data.Email);
-          setBirthday(data.Birthday?.split("T")[0]); // Format birthday
+          setBirthday(data.Birthday?.split("T")[0]);
           setFavoriteMovies(data.FavoriteMovies || []);
         })
         .catch((error) => console.error("Error fetching user data", error));
@@ -37,6 +48,18 @@ export const ProfileView = ({ movies, user, token, onLoggedOut }) => {
   const handleUpdate = (event) => {
     event.preventDefault();
 
+    if (!Password) {
+      alert("Please enter your password to save changes.");
+      return;
+    }
+
+    const updatedData = {
+      Username,
+      Email,
+      Birthday,
+      Password,
+    };
+
     fetch(
       `https://milasmovieflix-ab66d5118b4d.herokuapp.com/users/${user.Username}`,
       {
@@ -45,22 +68,28 @@ export const ProfileView = ({ movies, user, token, onLoggedOut }) => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          Username,
-          Password,
-          Email,
-          Birthday,
-        }),
+        body: JSON.stringify(updatedData),
       }
     )
       .then((response) => {
-        if (response.ok) {
-          alert("Profile updated successfully!");
-        } else {
-          alert("Failed to update profile");
+        if (!response.ok) {
+          return response.json().then((data) => {
+            const message =
+              data.errors?.[0]?.msg || "Failed to update profile.";
+            throw new Error(message);
+          });
         }
+        return response.json();
       })
-      .catch((error) => console.error("Error updating profile", error));
+      .then((updatedUser) => {
+        onUserUpdated(updatedUser);
+        alert("Profile updated successfully!");
+        setPassword("");
+      })
+      .catch((error) => {
+        console.error("Error updating profile", error);
+        alert(error.message);
+      });
   };
 
   const handleDelete = () => {
@@ -159,6 +188,7 @@ export const ProfileView = ({ movies, user, token, onLoggedOut }) => {
                   <Form.Label>Username</Form.Label>
                   <Form.Control
                     type="text"
+                    minLength="5"
                     value={Username}
                     onChange={(e) => setUsername(e.target.value)}
                     required
@@ -166,9 +196,10 @@ export const ProfileView = ({ movies, user, token, onLoggedOut }) => {
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="updatePassword">
-                  <Form.Label>Password</Form.Label>
+                  <Form.Label>Password (required to save changes)</Form.Label>
                   <Form.Control
                     type="password"
+                    minLength="6"
                     value={Password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
