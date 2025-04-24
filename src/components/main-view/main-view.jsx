@@ -126,6 +126,7 @@ export const MainView = () => {
                     user={user}
                     token={token}
                     movies={movies}
+                    onUserUpdated={updateUser}
                     onLoggedOut={() => {
                       setUser(null);
                       setToken(null);
