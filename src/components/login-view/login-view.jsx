@@ -1,7 +1,10 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../redux/reducers/user";
 import { Button, Form, Card, Container } from "react-bootstrap";
 
-export const LoginView = ({ onLoggedIn }) => {
+export const LoginView = () => {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -20,7 +23,7 @@ export const LoginView = ({ onLoggedIn }) => {
         if (data.user && data.token) {
           localStorage.setItem("user", JSON.stringify(data.user));
           localStorage.setItem("token", data.token);
-          onLoggedIn(data.user, data.token);
+          dispatch(setUser(data.user));
         } else {
           alert("No such user");
         }

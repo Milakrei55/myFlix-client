@@ -1,9 +1,11 @@
 import { useParams, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import "./movie-view.scss";
 
-export const MovieView = ({ movies }) => {
+export const MovieView = () => {
   const { movieId } = useParams();
+  const movies = useSelector((state) => state.movies.list);
   const movie = movies.find((m) => m._id === movieId);
 
   if (!movie) return <div>Movie not found</div>;
